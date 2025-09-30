@@ -39,6 +39,9 @@ python-email-validator==2.1.0
 jira==3.5.2
 requests==2.31.0
 
+# Microsoft Teams Integration
+pymsteams==0.2.2
+
 # Utilities
 python-dateutil==2.8.2
 arrow==1.3.0
