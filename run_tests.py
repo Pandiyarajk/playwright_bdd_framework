@@ -8,10 +8,15 @@ import sys
 import os
 import argparse
 from pathlib import Path
+from powerlogger import get_logger
+
+logger = get_logger("test_runner")
 
 
 def main():
     """Main execution entry point."""
+    logger.info("🚀 Starting test execution script")
+    
     parser = argparse.ArgumentParser(
         description='Playwright Python BDD Test Framework',
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -163,15 +168,21 @@ Examples:
     
     # Execute command
     cmd = ' '.join(cmd_parts)
-    print(f"Executing: {cmd}\n")
+    logger.info(f"▶️ Executing: {cmd}\n")
     
     exit_code = os.system(cmd)
     
     # Generate Allure report if requested
     if args.allure and exit_code == 0:
-        print("\nGenerating Allure report...")
+        logger.info("\n📊 Generating Allure report...")
         os.system('allure serve allure-results')
     
+    if exit_code == 0:
+        logger.info("✅ Test execution completed successfully")
+    else:
+        logger.error("❌ Test execution failed")
+    
+    logger.info("🏁 Test runner finished")
     sys.exit(exit_code >> 8)
 
 

@@ -1,8 +1,8 @@
 """Jira integration for test management."""
 
-import logging
 from typing import Dict, List, Optional
 from jira import JIRA
+from powerlogger import get_logger
 
 
 class JiraIntegration:
@@ -16,7 +16,7 @@ class JiraIntegration:
             config_manager: Configuration manager instance
         """
         self.config = config_manager
-        self.logger = logging.getLogger('AutomationFramework.JiraIntegration')
+        self.logger = get_logger('JiraIntegration')
         
         # Get Jira configuration
         self.server = config_manager.get('jira', 'server')

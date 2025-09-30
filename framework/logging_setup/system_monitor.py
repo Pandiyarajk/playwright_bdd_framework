@@ -4,9 +4,9 @@ import psutil
 import platform
 import threading
 import time
-import logging
 from datetime import datetime
 from typing import Dict, Optional
+from powerlogger import get_logger
 
 
 class SystemMonitor:
@@ -20,7 +20,7 @@ class SystemMonitor:
             config_manager: Configuration manager instance
         """
         self.config_manager = config_manager
-        self.logger = logging.getLogger('AutomationFramework.SystemMonitor')
+        self.logger = get_logger('SystemMonitor')
         self.monitoring = False
         self.monitor_thread = None
         
