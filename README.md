@@ -35,6 +35,7 @@ A comprehensive test automation framework built with Playwright and Python, supp
 
 ### 🔗 Integrations
 - **Jira + Zephyr Scale**: Automatic test execution results push
+- **Microsoft Teams**: Instant webhook alerts for test status and duration
 - **System Monitoring**: CPU, memory, disk, network logging
 - **OS Info**: Platform, version, environment details
 

@@ -19,6 +19,7 @@ from framework.logging_setup.logger import setup_logger
 from framework.logging_setup.system_monitor import SystemMonitor
 from framework.integrations.jira_integration import JiraIntegration
 from framework.integrations.zephyr_integration import ZephyrIntegration
+from framework.integrations.teams_webhook import create_teams_webhook
 from framework.reporting.email_reporter import EmailReporter
 
 
@@ -64,6 +65,15 @@ def before_all(context):
             context.zephyr_client = None
     else:
         context.zephyr_client = None
+    
+    # Initialize Microsoft Teams webhook integration
+    try:
+        context.teams_webhook = create_teams_webhook(context.config_manager)
+        if context.teams_webhook:
+            context.logger.info("🔗 Microsoft Teams webhook integration initialized")
+    except Exception as e:
+        context.logger.warning(f"⚠️ Failed to initialize Teams webhook: {e}")
+        context.teams_webhook = None
     
     # Test execution tracking
     context.test_results = {
@@ -190,6 +200,38 @@ def after_scenario(context, scenario):
         except Exception as e:
             context.logger.error(f"❌ Failed to update Zephyr Scale: {e}")
     
+    # Send Teams alert for test completion
+    if context.teams_webhook:
+        send_alert = False
+        
+        # Check if should send alert based on configuration
+        send_on_failure = context.config_manager.get('teams', 'send_on_test_failure', True)
+        send_on_complete = context.config_manager.get('teams', 'send_on_test_complete', True)
+        
+        if status == 'failed' and send_on_failure:
+            send_alert = True
+        elif send_on_complete:
+            send_alert = True
+        
+        if send_alert:
+            try:
+                error_msg = None
+                if scenario.status == 'failed':
+                    error_msg = str(scenario.exception) if hasattr(scenario, 'exception') else 'Unknown error'
+                
+                context.teams_webhook.send_test_alert(
+                    test_name=scenario.name,
+                    status=status,
+                    duration=duration,
+                    test_case_id=context.test_case_id,
+                    feature_name=scenario.feature.name,
+                    error_message=error_msg,
+                    tags=scenario.tags
+                )
+                context.logger.info(f"✅ Teams alert sent for {scenario.name}")
+            except Exception as e:
+                context.logger.error(f"❌ Failed to send Teams alert: {e}")
+    
     # Close browser
     try:
         context.browser_manager.stop()
@@ -241,6 +283,23 @@ def after_all(context):
                 context.logger.info("📧 Email report sent")
         except Exception as e:
             context.logger.error(f"❌ Failed to send email report: {e}")
+    
+    # Send Teams summary alert if enabled
+    if context.teams_webhook and context.config_manager.get('teams', 'send_summary', True):
+        try:
+            pass_rate = (context.test_results['passed'] / context.test_results['total'] * 100) if context.test_results['total'] > 0 else 0
+            
+            context.teams_webhook.send_summary_alert(
+                total=context.test_results['total'],
+                passed=context.test_results['passed'],
+                failed=context.test_results['failed'],
+                skipped=context.test_results['skipped'],
+                duration=total_duration,
+                pass_rate=pass_rate
+            )
+            context.logger.info("✅ Teams summary alert sent")
+        except Exception as e:
+            context.logger.error(f"❌ Failed to send Teams summary alert: {e}")
 
 
 def before_step(context, step):
