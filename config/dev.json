@@ -1,0 +1,15 @@
+{
+  "framework": {
+    "base_url": "https://dev.example.com",
+    "headless": false,
+    "slow_mo": 100,
+    "timeout": 60000
+  },
+  "database": {
+    "ms_sql_server": "dev-sql-server.example.com",
+    "ms_sql_database": "testdb_dev"
+  },
+  "logging": {
+    "level": "DEBUG"
+  }
+}
