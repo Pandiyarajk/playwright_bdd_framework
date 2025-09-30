@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 from playwright.sync_api import Page, Locator, expect
 from framework.utils.coordinate_utils import CoordinateUtils
+from framework.utils.screenshot_utils import ScreenshotUtils
 
 
 class PlaywrightActions:
@@ -399,27 +400,78 @@ class PlaywrightActions:
     def take_screenshot(
         self,
         path: Optional[str] = None,
-        full_page: bool = False
+        full_page: bool = False,
+        page: Optional[Page] = None,
+        use_os_screenshot: bool = False
     ) -> bytes:
         """
         Take screenshot.
         
         Args:
             path: Path to save screenshot
-            full_page: Capture full page
+            full_page: Capture full page (only for Playwright screenshots)
+            page: Optional Page object to use (defaults to self.page)
+            use_os_screenshot: Use OS-level screenshot (works on locked Windows screens)
+            
+        Returns:
+            Screenshot bytes (or path string if use_os_screenshot=True)
+        """
+        if use_os_screenshot:
+            # Use OS-level screenshot that works on locked screens
+            screenshot_path = ScreenshotUtils.take_screenshot(path=path)
+            # Return the path as bytes for compatibility
+            return screenshot_path.encode() if isinstance(screenshot_path, str) else screenshot_path
+        
+        # Use Playwright screenshot (requires active browser)
+        target_page = page or self.page
+        
+        if path:
+            Path(path).parent.mkdir(parents=True, exist_ok=True)
+        
+        return target_page.screenshot(path=path, full_page=full_page)
+    
+    def take_element_screenshot(
+        self,
+        selector: str,
+        path: str,
+        page: Optional[Page] = None
+    ) -> bytes:
+        """
+        Take screenshot of specific element.
+        
+        Args:
+            selector: Element selector
+            path: Path to save screenshot
+            page: Optional Page object to use (defaults to self.page)
             
         Returns:
             Screenshot bytes
         """
-        if path:
-            Path(path).parent.mkdir(parents=True, exist_ok=True)
-        
-        return self.page.screenshot(path=path, full_page=full_page)
-    
-    def take_element_screenshot(self, selector: str, path: str) -> bytes:
-        """Take screenshot of specific element."""
+        target_page = page or self.page
         Path(path).parent.mkdir(parents=True, exist_ok=True)
-        return self.page.locator(selector).screenshot(path=path)
+        return target_page.locator(selector).screenshot(path=path)
+    
+    @staticmethod
+    def take_os_screenshot(
+        path: Optional[str] = None,
+        monitor: int = 0,
+        region: Optional[tuple] = None
+    ) -> str:
+        """
+        Take OS-level screenshot without requiring Playwright page.
+        
+        This static method works even on locked Windows screens and doesn't
+        require an active browser or page object.
+        
+        Args:
+            path: Path to save screenshot (auto-generated if not provided)
+            monitor: Monitor number (0 = all monitors, 1 = primary, 2 = secondary)
+            region: Optional region to capture (left, top, width, height)
+            
+        Returns:
+            Path to saved screenshot
+        """
+        return ScreenshotUtils.take_screenshot(path=path, monitor=monitor, region=region)
     
     # JavaScript execution
     
