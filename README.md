@@ -25,12 +25,13 @@ A comprehensive test automation framework built with Playwright and Python, supp
 - **Coordinate Actions**: Click by coordinates, get element positions
 - **Element Wrappers**: Reusable Playwright element interaction functions
 
-### 📈 Reporting
+### 📈 Reporting & Logging
 - Behave JSON/HTML reports
 - Allure reports
 - Custom HTML reports
 - Email notifications
 - Screenshot on failure
+- **Powerlogger**: Enhanced logging with emojis and colors
 
 ### 🔗 Integrations
 - **Jira + Zephyr Scale**: Automatic test execution results push
@@ -227,6 +228,31 @@ actions.type_text("input#username", "testuser", delay=100)
 # Take screenshot
 actions.take_screenshot("login_page.png")
 ```
+
+### Powerlogger Usage
+
+```python
+from powerlogger import get_logger
+
+logger = get_logger("my_application")
+
+def main():
+    logger.info("🚀 Starting application")
+    
+    try:
+        # Your application logic here
+        logger.info("✅ Application running successfully")
+        logger.debug("🔍 Processing user input...")
+    except Exception as e:
+        logger.error(f"❌ Application error: {e}")
+        logger.exception("📋 Full traceback:")
+    
+    logger.info("🏁 Application finished")
+```
+
+For more examples, see:
+- `examples/powerlogger_example.py` - Comprehensive powerlogger examples
+- `docs/POWERLOGGER_MIGRATION.md` - Migration guide and emoji reference
 
 ## Configuration
 

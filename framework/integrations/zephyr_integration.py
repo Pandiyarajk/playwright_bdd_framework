@@ -1,9 +1,9 @@
 """Zephyr Scale integration for test execution management."""
 
-import logging
 import requests
 from typing import Dict, List, Optional
 from datetime import datetime
+from powerlogger import get_logger
 
 
 class ZephyrIntegration:
@@ -17,7 +17,7 @@ class ZephyrIntegration:
             config_manager: Configuration manager instance
         """
         self.config = config_manager
-        self.logger = logging.getLogger('AutomationFramework.ZephyrIntegration')
+        self.logger = get_logger('ZephyrIntegration')
         
         # Get Zephyr configuration
         self.api_token = config_manager.get('zephyr', 'api_token')

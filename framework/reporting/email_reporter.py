@@ -8,7 +8,7 @@ from email import encoders
 from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
-import logging
+from powerlogger import get_logger
 
 
 class EmailReporter:
@@ -22,7 +22,7 @@ class EmailReporter:
             config_manager: Configuration manager instance
         """
         self.config = config_manager
-        self.logger = logging.getLogger('AutomationFramework.EmailReporter')
+        self.logger = get_logger('EmailReporter')
         
         # Get email configuration
         self.smtp_server = config_manager.get('email', 'smtp_server', 'smtp.gmail.com')
