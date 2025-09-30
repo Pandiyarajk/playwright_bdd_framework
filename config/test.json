@@ -1,0 +1,21 @@
+{
+  "framework": {
+    "base_url": "https://test.example.com",
+    "headless": true,
+    "timeout": 30000
+  },
+  "database": {
+    "ms_sql_server": "test-sql-server.example.com",
+    "ms_sql_database": "testdb_test"
+  },
+  "reporting": {
+    "email_enabled": true,
+    "generate_allure_report": true
+  },
+  "jira": {
+    "enabled": true
+  },
+  "zephyr": {
+    "enabled": true
+  }
+}

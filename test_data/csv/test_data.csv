@@ -1,0 +1,5 @@
+test_id,username,email,expected_result
+1,user1,user1@test.com,success
+2,user2,user2@test.com,success
+3,user3,user3@test.com,failure
+4,user4,user4@test.com,success
